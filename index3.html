@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MARKMELLON</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --bg-1: #0f1724;
+      --bg-2: #071024;
+      --text: #e6eef8;
+      --muted: #9fb0d2;
+      --accent-1: #7bffce;
+      --accent-2: #6ea8ff;
+      --accent-3: #d86bff;
+      --nav-height: 78px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    }
+
+    header {
+      position: fixed;
+      top: 12px;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .nav {
+      width: 94%;
+      max-width: 1200px;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(6px);
+      border-radius: 14px;
+      padding: 10px 18px;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-link {
+      position: relative;
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      border: 2px solid transparent;
+      background: rgba(255,255,255,0.03);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .nav-link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      padding: 2px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .nav-link:hover::before { opacity: 1; }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, var(--accent-2) 10%, transparent 10.01%);
+      transform: translate(-50%, -50%);
+      opacity: 0.6;
+      border-radius: 50%;
+      transition: width 0.5s ease, height 0.5s ease, opacity 0.6s ease;
+      pointer-events: none;
+    }
+
+    .nav-link:active::after {
+      width: 200%;
+      height: 200%;
+      opacity: 0;
+    }
+
+    .nav-link:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 10px var(--accent-2), 0 0 20px var(--accent-3);
+      border-color: var(--accent-2);
+      transition: transform 0.1s, box-shadow 0.3s;
+    }
+
+    .nav-link:hover { color: var(--accent-2); }
+
+    .wrap {
+      max-width: 1100px;
+      margin: calc(var(--nav-height) + 30px) auto;
+      padding: 28px;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin: 30px 0 20px;
+      letter-spacing: 1px;
+    }
+
+    /* ✅ Changed: 3 images per row */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .photo, .video {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .photo img,
+    .video video {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .photo:hover img,
+    .video:hover video {
+      transform: scale(1.07);
+      box-shadow: 0 0 10px var(--accent-1), 0 0 20px var(--accent-3);
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 25px var(--accent-1), 0 0 50px var(--accent-3); }
+      50% { box-shadow: 0 0 40px var(--accent-1), 0 0 70px var(--accent-3); }
+    }
+
+    .video.playing video {
+      height: 350px;
+      animation: glowPulse 2s ease-in-out infinite;
+      transform: scale(1.05);
+      z-index: 5;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 50px;
+      font-size: 14px;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .lightbox img,
+    .lightbox video {
+      max-width: 90%;
+      max-height: 85%;
+      border-radius: 12px;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>  
+  <header>
+    <div class="nav">
+      <div class="nav-inner">
+        <nav>
+          <ul>
+            <li><a class="nav-link" href="index.html">Home</a></li>
+            <li><a class="nav-link active" href="index3.html">Photos</a></li>
+            <li><a class="nav-link" href="about.html">About</a></li>
+            <li><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h2></h2>
+    <div class="gallery" id="gallery">
+      <!-- your photos -->
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122620470457.jpg?updatedAt=1767087683329" alt="street"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122620040136.png" alt="portrait"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mm.png?updatedAt=1765835532798" alt="nature"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/1759939059745.jpg?updatedAt=1767087913558" alt="city"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/mark2.jpg?updatedAt=1765148504231" alt="beach"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122911530110.png?updatedAt=1767087542177" alt="mountain"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122621534832.jpg?updatedAt=1767087685540https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122621534832.jpg?updatedAt=1767087685540" alt="night"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/samsung.png?updatedAt=1767087989367" alt="forest"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/Samsung%20galaxy%20s22%20ultra%20real%20front%20camera%20.jpg?updatedAt=1767087923257" alt="travel"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/20241110_174220-1.jpg?updatedAt=1767087950436" alt="waterfall"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/20241110_174213.jpg?updatedAt=1767087950073" alt="architecture"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2024111020100846%20(1).jpg?updatedAt=1767089953847" alt="street"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/_2025021102243274.jpg?updatedAt=1767089935206" alt="portrait"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/20250806_170402.jpg?updatedAt=1767090010150" alt="nature"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025062819422657.jpg?updatedAt=1767090010297" alt="city"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/IMG_202512241602299981.jpg?updatedAt=1767089727796" alt="beach"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025061916564417(1).jpg?updatedAt=1767090010728" alt="mountain"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/20241114_154719.jpg?updatedAt=1767090212183" alt="night"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025062619025414.jpg?updatedAt=1767089959006" alt="forest"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/samsung%20galaxy%20s22%20ultra%20camera%20.jpg?updatedAt=1767089960220" alt="travel"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025062010013906.jpg?updatedAt=1767089965395" alt="waterfall"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2024111611161848.jpg?updatedAt=1767089969077" alt="street"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025061916564417(1).jpg?updatedAt=1767090010728" alt="portrait"></div>
+      <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/InShot_20250331_230150284.jpg?updatedAt=1767091191359" alt="nature"></div>
+      <div class="photo"><img src="" alt="city"></div>
+      <div class="photo"><img src="myphoto/image26.jpg" alt="beach"></div>
+      <div class="photo"><img src="myphoto/image27.jpg" alt="mountain"></div>
+      <div class="photo"><img src="myphoto/image28.jpg" alt="night"></div>
+      <div class="photo"><img src="myphoto/image29.jpg" alt="forest"></div>
+      <div class="photo"><img src="myphoto/image30.jpg" alt="travel"></div>
+    </div>
+
+    <h2></h2>
+    <div class="gallery" id="video-gallery">
+      <div class="video"><video src="myvideos/video1.mp4" controls poster="myvideos/thumb1.jpg"></video></div>
+      <div class="video"><video src="myvideos/video2.mp4" controls poster="myvideos/thumb2.jpg"></video></div>
+      <div class="video"><video src="myvideos/video3.mp4" controls poster="myvideos/thumb3.jpg"></video></div>
+      <div class="video"><video src="myvideos/video4.mp4" controls poster="myvideos/thumb4.jpg"></video></div>
+      <div class="video"><video src="myvideos/video5.mp4" controls poster="myvideos/thumb5.jpg"></video></div>
+      <div class="video"><video src="myvideos/video6.mp4" controls poster="myvideos/thumb6.jpg"></video></div>
+     
+    </div>
+
+    <footer>
+      <p>&copy; <span id="year"></span> Markmellon</p>
+    </footer>
+  </main>
+
+  <!-- Lightbox for images -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <img id="lightbox-img" src="" alt="preview">
+  </div>
+
+  <!-- Lightbox for videos -->
+  <div class="lightbox" id="video-lightbox" onclick="closeVideoLightbox(event)">
+    <video id="lightbox-video" controls autoplay></video>
+  </div>
+
+  <script>
+    // Update footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Image Lightbox
+    const gallery = document.getElementById('gallery');
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+
+    gallery.addEventListener('click', e => {
+      const img = e.target.closest('img');
+      if (!img) return;
+      lbImg.src = img.src;
+      lightbox.style.display = 'flex';
+    });
+
+    function closeLightbox(e) {
+      if (e.target !== lightbox) return;
+      lightbox.style.display = 'none';
+      lbImg.src = '';
+    }
+
+    // Video Lightbox
+    const videoGallery = document.getElementById('video-gallery');
+    const videoLightbox = document.getElementById('video-lightbox');
+    const lbVideo = document.getElementById('lightbox-video');
+
+    videoGallery.addEventListener('click', e => {
+      const vid = e.target.closest('video');
+      if (!vid) return;
+      lbVideo.src = vid.currentSrc || vid.src;
+      videoLightbox.style.display = 'flex';
+      lbVideo.play();
+    });
+
+    function closeVideoLightbox(e) {
+      if (e.target !== videoLightbox) return;
+      lbVideo.pause();
+      lbVideo.src = '';
+      videoLightbox.style.display = 'none';
+    }
+
+    // Play/pause effect on videos
+    const videos = document.querySelectorAll('.video video');
+    videos.forEach(video => {
+      video.addEventListener('play', () => {
+        videos.forEach(v => {
+          if (v !== video) {
+            v.pause();
+            v.parentElement.classList.remove('playing');
+          }
+        });
+        video.parentElement.classList.add('playing');
+      });
+
+      video.addEventListener('pause', () => {
+        video.parentElement.classList.remove('playing');
+      });
+
+      video.addEventListener('ended', () => {
+        video.parentElement.classList.remove('playing');
+      });
+    });
+  </script>
+
+  <!-- Combined Background Image or Video Script -->
+  <script>
+    const useVideoBackground = false;
+    const backgroundImage = "https://ik.imagekit.io/s95tumxuk/Mark/samsung.png?updatedAt=1767087989367";
+    const backgroundVideo = "myphoto/video2.mp4";
+
+    const bgContainer = document.createElement('div');
+    bgContainer.style.position = 'fixed';
+    bgContainer.style.top = '0';
+    bgContainer.style.left = '0';
+    bgContainer.style.width = '100%';
+    bgContainer.style.height = '100%';
+    bgContainer.style.zIndex = '-1';
+    bgContainer.style.overflow = 'hidden';
+    bgContainer.style.transition = 'opacity 1.5s ease';
+    bgContainer.style.opacity = '0';
+
+    if (useVideoBackground) {
+      const video = document.createElement('video');
+      video.src = backgroundVideo;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'cover';
+      video.style.filter = 'brightness(65%)';
+      bgContainer.appendChild(video);
+    } else {
+      bgContainer.style.background = `url('${backgroundImage}') center center / cover no-repeat fixed`;
+      bgContainer.style.filter = 'brightness(70%)';
+    }
+
+    document.body.prepend(bgContainer);
+    window.addEventListener('load', () => bgContainer.style.opacity = '1');
+  </script>
+
+  <!-- Image Watermark Script -->
+  <script>
+    (function() {
+      const watermarkText = "© MARKMELLON";
+      const textColor = "rgba(255,255,255,0.6)";
+      const font = "20px Inter, Arial, sans-serif";
+      const padding = 12;
+
+      function addImageWatermarks() {
+        document.querySelectorAll("img").forEach(img => {
+          if (img.dataset.watermarked || img.naturalWidth === 0 || img.naturalHeight === 0) return;
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          ctx.drawImage(img, 0, 0);
+          ctx.font = font;
+          ctx.fillStyle = textColor;
+          ctx.textAlign = "right";
+          ctx.textBaseline = "bottom";
+          ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
+          img.src = canvas.toDataURL("image/jpeg", 0.9);
+          img.dataset.watermarked = "true";
+        });
+      }
+
+      window.addEventListener("load", addImageWatermarks);
+      const observer = new MutationObserver(addImageWatermarks);
+      observer.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
+  <script src="assets/js/data-loader.js"></script>
+</body>
+</html>

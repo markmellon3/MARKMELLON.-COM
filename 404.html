@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>404 Not Found — MARKMELLON</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">     
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <meta name="description" content="Page not found — Mark Mellon personal website.">
+  <meta name="robots" content="noindex">
+  <style>
+    :root{
+      --bg-1:#0f1724;
+      --bg-2:#071024;
+      --card:rgba(255,255,255,0.04);
+      --text:#e6eef8;
+      --muted:#9fb0d2;
+      --accent-1:#7bffce;
+      --accent-2:#6ea8ff;
+      --accent-3:#d86bff;
+      --nav-height:78px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Inter,system-ui,"Segoe UI",Roboto,Arial;
+      color:var(--text);
+      background:transparent;
+    }
+    header{
+      position:fixed;left:0;right:0;top:12px;
+      height:var(--nav-height);
+      display:flex;align-items:center;justify-content:center;
+      z-index:60;
+      background:rgba(0,0,0,0.25);
+      border-radius:14px;
+    }
+    .nav{width:94%;max-width:1200px;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px);border-radius:14px;padding:10px 18px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:800;color:#012;box-shadow:0 6px 24px rgba(0,0,0,0.4)}
+    nav ul{list-style:none;display:flex;gap:12px;margin:0;padding:0}
+    .nav-link{position:relative;display:inline-block;padding:10px 16px;border-radius:10px;font-weight:600;color:var(--text);text-decoration:none}
+    .nav-link:hover{background:rgba(255,255,255,0.06)}
+    .wrap{
+      max-width:800px;margin:auto;
+      padding-top:calc(var(--nav-height) + 120px);
+      text-align:center;
+    }
+    h1{font-size:52px;margin:0 0 12px;background:linear-gradient(90deg,var(--accent-1),var(--accent-3));-webkit-background-clip:text;color:transparent;}
+    p{color:var(--muted);font-size:18px;margin-bottom:30px}
+    a.btn{display:inline-block;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;background:linear-gradient(90deg,var(--accent-2),var(--accent-3));color:#051126;box-shadow:0 10px 30px rgba(120,80,200,0.18)}
+    footer{margin-top:60px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+     
+  <header>
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="brand">
+          <div class="logo">MM</div>
+        </div>
+        <nav>
+          <ul>
+            <li><a class="nav-link" href="index.html">Home</a></li>
+            <li><a class="nav-link" href="index3.html">Photos</a></li>
+            <li><a class="nav-link" href="about.html">About</a></li>
+            <li><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>404</h1>
+    <p>Oops! The page you were looking for doesn’t exist or has been moved.</p>
+    <!-- Missing URL will appear here -->
+    <p id="missing-url" style="color:var(--muted);font-size:16px;margin-bottom:30px;"></p>
+    <a href="index.html" class="btn">← Back to Home</a>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="year"></span> MarkMellon. All rights reserved.</p>
+  </footer>
+
+  <!-- Background and Missing URL Script -->
+  <script>
+    // Display current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Show the missing URL
+    const missingUrlElem = document.getElementById('missing-url');
+    missingUrlElem.textContent = `The requested URL "${window.location.pathname}" was not found on this server.`;
+
+    // Background script
+    const useVideoBackground = false;
+    const backgroundImage = "assets/mybackground/wallpaper2.jpg";
+    const backgroundVideo = "myphoto/background.mp4";
+
+    const bgContainer = document.createElement('div');
+    bgContainer.style.position='fixed';
+    bgContainer.style.top='0';
+    bgContainer.style.left='0';
+    bgContainer.style.width='100%';
+    bgContainer.style.height='100%';
+    bgContainer.style.zIndex='-1';
+    bgContainer.style.overflow='hidden';
+    bgContainer.style.transition='opacity 1.5s ease';
+    bgContainer.style.opacity='0';
+
+    if(useVideoBackground){
+      const video=document.createElement('video');
+      video.src=backgroundVideo;
+      video.autoplay=true;
+      video.loop=true;
+      video.muted=true;
+      video.playsInline=true;
+      video.style.width='100%';
+      video.style.height='100%';
+      video.style.objectFit='cover';
+      bgContainer.appendChild(video);
+    }else{
+      bgContainer.style.background=`url('${backgroundImage}') center center / cover no-repeat fixed`;
+    }
+
+    document.body.prepend(bgContainer);
+    window.addEventListener('load',()=>{bgContainer.style.opacity='1';});
+  </script>
+
+  <!-- Watermark -->
+  <script>
+  (function() {
+    const watermarkText = "© MARKMELLON";
+    const textColor = "rgba(255,255,255,0.6)";
+    const font = "20px Inter, Arial, sans-serif";
+    const padding = 12;
+
+    function addImageWatermarks() {
+      document.querySelectorAll("img").forEach(img => {
+        if (img.dataset.watermarked || img.width === 0 || img.height === 0) return;
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        ctx.drawImage(img, 0, 0);
+        ctx.font = font;
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "right";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
+        img.src = canvas.toDataURL("image/jpg", 0.9);
+        img.dataset.watermarked = "true";
+      });
+    }
+
+    function addVideoWatermarks() {
+      document.querySelectorAll("video").forEach(video => {
+        if (video.dataset.watermarked) return;
+        const overlay = document.createElement("div");
+        overlay.textContent = watermarkText;
+        overlay.style.position = "absolute";
+        overlay.style.bottom = "8px";
+        overlay.style.right = "12px";
+        overlay.style.font = font;
+        overlay.style.color = textColor;
+        overlay.style.textShadow = "0 0 4px rgba(0,0,0,0.8)";
+        overlay.style.pointerEvents = "none";
+        overlay.style.userSelect = "none";
+        overlay.style.zIndex = "3";
+
+        const wrapper = document.createElement("div");
+        wrapper.style.position = "relative";
+        wrapper.style.display = "inline-block";
+
+        video.parentNode.insertBefore(wrapper, video);
+        wrapper.appendChild(video);
+        wrapper.appendChild(overlay);
+        video.dataset.watermarked = "true";
+      });
+    }
+
+    window.addEventListener("load", () => {
+      addImageWatermarks();
+      addVideoWatermarks();
+    });
+
+    const observer = new MutationObserver(() => {
+      addImageWatermarks();
+      addVideoWatermarks();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  })();
+  </script>
+  <script src="assets/js/data-loader.js"></script>
+</body>
+</html>

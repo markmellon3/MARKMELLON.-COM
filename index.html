@@ -1,0 +1,304 @@
+
+<!-- Your normal page content below -->
+<!doctype html>
+<html lang="en">
+<head>
+  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MARKMELLON</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <style>
+    :root{
+      --bg-1: #0f1724;
+      --bg-2: #071024;
+      --card: rgba(255,255,255,0.04);
+      --text: #e6eef8;
+      --muted: #9fb0d2;
+      --accent-1: #7bffce;
+      --accent-2: #6ea8ff;
+      --accent-3: #d86bff;
+      --nav-height: 78px;
+    }
+    *{box-sizing:border-box}
+
+    /* ✨ UPDATED: background made transparent to show image/video */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Inter,system-ui,"Segoe UI",Roboto,Arial;
+      color:var(--text);
+      background: transparent;
+      backdrop-filter: none;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:calc(var(--nav-height) + 30px) auto 80px;
+      padding:28px;
+      background: rgba(0,0,0,0.25); /* subtle overlay for text readability */
+      border-radius:14px;
+    }
+
+    header{
+      position:fixed;left:0;right:0;top:12px;
+      height:var(--nav-height);
+      display:flex;align-items:center;justify-content:center;
+      z-index:60;
+      background: rgba(0,0,0,0.25); /* transparent nav background */
+      border-radius:14px;
+    }
+
+    .nav{width:94%;max-width:1200px;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px);border-radius:14px;padding:10px 18px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:800;color:#012;box-shadow:0 6px 24px rgba(0,0,0,0.4)}
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    nav ul{list-style:none;display:flex;gap:12px;margin:0;padding:0}
+    .nav-link{position:relative;display:inline-block;padding:10px 16px;border-radius:10px;font-weight:600;color:var(--text);text-decoration:none}
+    .nav-link::before{content:"";position:absolute;inset:0;border-radius:10px;padding:2px;background:linear-gradient(90deg,var(--accent-1),var(--accent-2),var(--accent-3));-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0.16;filter:blur(10px);transition:.25s}
+    .nav-link:hover::before{opacity:0.95;transform:translateY(0)}
+    .nav-link.active{background:rgba(255,255,255,0.02);}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:center;margin-bottom:30px}
+    .hero-card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 40px rgba(2,6,23,0.6)}
+    .intro h2{margin:0 0 8px;font-size:28px}
+    .intro p{margin:0;color:var(--muted);line-height:1.6}
+    .cta{margin-top:18px}
+    .btn{display:inline-block;padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none}
+    .btn-primary{background:linear-gradient(90deg,var(--accent-2),var(--accent-3));color:#051126;box-shadow:0 10px 30px rgba(120,80,200,0.18)}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .photo{position:relative;overflow:hidden;border-radius:12px;background:#071227}
+    .photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+    .photo:hover img{transform:scale(1.06)}
+    .photo .meta{position:absolute;left:10px;bottom:10px;padding:6px 10px;border-radius:999px;font-size:12px;background:rgba(0,0,0,0.35);backdrop-filter:blur(4px)}
+    section{margin-top:18px}
+    h3{margin:6px 0 12px}
+    .about{line-height:1.7;color:var(--muted)}
+    .contact-grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    form{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px}
+    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+    label{font-size:13px;color:var(--muted)}
+    footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
+    .lightbox{position:fixed;inset:0;background:rgba(2,6,23,0.8);display:none;align-items:center;justify-content:center;padding:20px;z-index:200}
+    .lightbox img{max-width:90%;max-height:90%;border-radius:10px;box-shadow:0 20px 80px rgba(0,0,0,0.8)}
+    @media (max-width:980px){.hero{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}.contact-grid{grid-template-columns:1fr}}
+    @media (max-width:560px){.gallery{grid-template-columns:1fr}.wrap{padding:16px;margin-top:96px}}
+  </style>
+</head>
+<body>
+  
+  <header>
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="brand">
+          <div class="logo">MM</div>
+          <div>
+            <h1></h1>             
+            <p></p>
+          </div>
+        </div>
+        <nav>
+          <ul>
+            <li><a class="nav-link active" href="index.html">Home</a></li>
+            <li><a class="nav-link" href="index3.html">Photos</a></li>
+            <li><a class="nav-link" href="about.html">About</a></li>
+            <li><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="home" class="hero">
+     <div class="intro">
+  <div id="homeContent">
+    <h2>MARKMELLON</h2>
+    <p>Welcome to MarkMellon's personal website.</p>
+  </div>
+  <div class="cta">
+    <a href="#photos" class="btn btn-primary">See my photos</a>
+  </div>
+</div>
+      <aside class="hero-card">
+        <h3>Quick Info</h3>
+        <p style="color:var(--muted)">Based in: Uganda, Kampala<br/>Email: markmellon39@gmail.com</p>
+      </aside>
+    </section>
+
+    <section id="photos">
+      <h3>Photos</h3>
+      <div class="gallery" id="gallery">
+        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122620040136.png" alt="photo-1"><div class="meta">Street</div></div>
+        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122620470457.jpg?updatedAt=1767087683329" alt="photo-2"><div class="meta">Portrait</div></div>
+        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122621534832.jpg?updatedAt=1767087685540" alt="photo-3"><div class="meta">Nature</div></div>
+        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mm.png?updatedAt=1765835532798" alt="photo-4"><div class="meta">Travel</div></div>
+      </div>
+    </section>
+
+    <section id="about">
+      <p class="about"></p>
+    </section>
+    <footer>
+      <p>&copy; <span id="year"></span> MarkMellon. All rights reserved.</p>
+    </footer>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const links = document.querySelectorAll('.nav-link');
+    links.forEach(l => l.addEventListener('click', e => {
+      links.forEach(x => x.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+    }));
+    const gallery = document.getElementById('gallery');
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    gallery.addEventListener('click', e => {
+      const card = e.target.closest('.photo');
+      if(!card) return;
+      const img = card.querySelector('img').src;
+      lbImg.src = img;
+      lightbox.style.display = 'flex';
+    });
+    function closeLightbox(e){
+      if(e.target !== lightbox) return;
+      lightbox.style.display = 'none';
+      lbImg.src = '';
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', function(e){
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      })
+    });
+  </script>
+  
+<!-- Background Image or Video Script -->
+  <script>
+    // ==== CONFIGURATION ====
+    const useVideoBackground = false; // set to true if you want to use video
+    const backgroundImage = "https://ik.imagekit.io/s95tumxuk/Mark/samsung.png?updatedAt=1767087989367"; // path to your image
+    const backgroundVideo = "myphoto/background.mp4"; // path to your video file
+
+    // ==== DO NOT EDIT BELOW THIS LINE ====
+    const bgContainer = document.createElement('div');
+    bgContainer.style.position = 'fixed';
+    bgContainer.style.top = '0';
+    bgContainer.style.left = '0';
+    bgContainer.style.width = '100%';
+    bgContainer.style.height = '100%';
+    bgContainer.style.zIndex = '-1';
+    bgContainer.style.overflow = 'hidden';
+    bgContainer.style.transition = 'opacity 1.5s ease';
+    bgContainer.style.opacity = '0';
+
+    if (useVideoBackground) {
+      const video = document.createElement('video');
+      video.src = backgroundVideo;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'cover';
+      bgContainer.appendChild(video);
+    } else {
+      bgContainer.style.background = `url('${backgroundImage}') center center / cover no-repeat fixed`;
+    }
+
+    document.body.prepend(bgContainer);
+    window.addEventListener('load', ()=>{ bgContainer.style.opacity = '1'; });
+  </script>
+  <!-- ========== WATERMARK SCRIPT ========== -->
+<script>
+(function() {
+  const watermarkText = "© MARKMELLON"; // ← customize this
+  const textColor = "rgba(255,255,255,0.6)";
+  const font = "20px Inter, Arial, sans-serif";
+  const padding = 12;
+
+  // add watermark to all <img> tags
+  function addImageWatermarks() {
+    document.querySelectorAll("img").forEach(img => {
+      // skip icons or already processed
+      if (img.dataset.watermarked || img.width === 0 || img.height === 0) return;
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+      ctx.font = font;
+      ctx.fillStyle = textColor;
+      ctx.textAlign = "right";
+      ctx.textBaseline = "bottom";
+      ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
+
+      img.src = canvas.toDataURL("image/jpeg", 0.9);
+      img.dataset.watermarked = "true";
+    });
+  }
+
+  // overlay watermark visually on videos
+  function addVideoWatermarks() {
+    document.querySelectorAll("video").forEach(video => {
+      if (video.dataset.watermarked) return;
+
+      const overlay = document.createElement("div");
+      overlay.textContent = watermarkText;
+      overlay.style.position = "absolute";
+      overlay.style.bottom = "8px";
+      overlay.style.right = "12px";
+      overlay.style.font = font;
+      overlay.style.color = textColor;
+      overlay.style.textShadow = "0 0 4px rgba(0,0,0,0.8)";
+      overlay.style.pointerEvents = "none";
+      overlay.style.userSelect = "none";
+      overlay.style.zIndex = "3";
+
+      // wrap the video in a positioned container
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+      wrapper.style.display = "inline-block";
+      wrapper.style.width = video.width ? video.width + "px" : "auto";
+      wrapper.style.height = video.height ? video.height + "px" : "auto";
+
+      video.parentNode.insertBefore(wrapper, video);
+      wrapper.appendChild(video);
+      wrapper.appendChild(overlay);
+
+      video.dataset.watermarked = "true";
+    });
+  }
+
+  // Run when page finishes loading
+  window.addEventListener("load", () => {
+    addImageWatermarks();
+    addVideoWatermarks();
+  });
+
+  // Also run on dynamically added media (e.g., via admin panel)
+  const observer = new MutationObserver(() => {
+    addImageWatermarks();
+    addVideoWatermarks();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>  
+<script src="assets/js/data-loader.js"></script>
+</body>
+</html>
+  </script>
+</body>
+</html>

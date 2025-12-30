@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard — MARKMELLON</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: #f4f6f8;
+  color: #333;
+}
+header {
+  padding: 15px 20px;
+  background: #1e293b;
+  color: #fff;
+  text-align: center;
+}
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.card i {
+  font-size: 32px;
+  padding: 15px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.card .info {
+  flex: 1;
+}
+.card .info h3 {
+  margin: 0;
+  font-size: 24px;
+}
+.card .info p {
+  margin: 5px 0 0 0;
+  color: #555;
+  font-weight: bold;
+}
+.charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+canvas {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 MARKMELLON Analytics Dashboard</h1>
+</header>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="cards">
+    <div class="card">
+      <i class="fas fa-eye" style="background:#d1fae5; color:#10b981;"></i>
+      <div class="info">
+        <h3 id="dailyVisits">0</h3>
+        <p>Daily Visits</p>
+      </div>
+    </div>
+    <div class="card">
+      <i class="fas fa-shopping-cart" style="background:#cffafe; color:#06b6d4;"></i>
+      <div class="info">
+        <h3 id="sales">0</h3>
+        <p>Sales</p>
+      </div>
+    </div>
+    <div class="card">
+      <i class="fas fa-comment" style="background:#fee2e2; color:#ef4444;"></i>
+      <div class="info">
+        <h3 id="comments">0</h3>
+        <p>Comments</p>
+      </div>
+    </div>
+    <div class="card">
+      <i class="fas fa-users" style="background:#fef3c7; color:#f59e0b;"></i>
+      <div class="info">
+        <h3 id="totalVisits">0</h3>
+        <p>Total Visits</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts">
+    <div>
+      <h2>Area Chart - Visitors Over Time</h2>
+      <canvas id="areaChart"></canvas>
+    </div>
+    <div>
+      <h2>Line Chart - Daily Visits</h2>
+      <canvas id="lineChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+async function fetchAnalytics() {
+  try {
+    const res = await fetch('get_analytics.php'); // Server script that returns JSON
+    return await res.json();
+  } catch(e) {
+    console.error("Failed to fetch analytics:", e);
+    return {
+      dailyVisits: 0,
+      sales: 0,
+      comments: 0,
+      totalVisits: 0,
+      areaData: [],
+      lineData: []
+    };
+  }
+}
+
+async function updateDashboard() {
+  const data = await fetchAnalytics();
+
+  // Update summary cards
+  document.getElementById('dailyVisits').textContent = data.dailyVisits.toLocaleString();
+  document.getElementById('sales').textContent = data.sales.toLocaleString();
+  document.getElementById('comments').textContent = data.comments.toLocaleString();
+  document.getElementById('totalVisits').textContent = data.totalVisits.toLocaleString();
+
+  // Area Chart
+  const areaCtx = document.getElementById('areaChart').getContext('2d');
+  if(window.areaChart) window.areaChart.destroy();
+  window.areaChart = new Chart(areaCtx, {
+    type: 'line',
+    data: {
+      labels: data.areaData.map(d => d.date),
+      datasets: [{
+        label: 'Visitors',
+        data: data.areaData.map(d => d.visitors),
+        backgroundColor: 'rgba(14,165,233,0.2)',
+        borderColor: '#0ea5e9',
+        fill: true,
+        tension:0.4
+      }]
+    },
+    options: {
+      responsive:true,
+      plugins:{ legend:{ display:false } },
+      scales:{ y:{ beginAtZero:true } }
+    }
+  });
+
+  // Line Chart
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  if(window.lineChart) window.lineChart.destroy();
+  window.lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: data.lineData.map(d => d.date),
+      datasets:[{
+        label:'Daily Visits',
+        data: data.lineData.map(d => d.visits),
+        borderColor:'#3b82f6',
+        backgroundColor:'rgba(59,130,246,0.2)',
+        tension:0.4
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ display:false } },
+      scales:{ y:{ beginAtZero:true } }
+    }
+  });
+}
+
+// Auto-update every 60 seconds
+updateDashboard();
+setInterval(updateDashboard,60000);
+</script>
+</body>
+</html>

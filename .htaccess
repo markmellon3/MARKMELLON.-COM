@@ -1,0 +1,22 @@
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Disable directory listing
+Options -Indexes
+
+# Protect markmellon-admin via basic auth (server-side .htpasswd)
+<IfModule mod_authn_file.c>
+  <Location "/markmellon-admin">
+    AuthType Basic
+    AuthName "Restricted Area"
+    AuthUserFile __HTPASSWD_PATH__
+    Require valid-user
+  </Location>
+</IfModule>
+
+# Default index
+DirectoryIndex index.html
+# Custom 404 page
+ErrorDocument 404 /404.html
