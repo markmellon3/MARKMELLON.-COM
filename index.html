@@ -1,11 +1,9 @@
-
-<!-- Your normal page content below -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta name="google-site-verification" content="_ZE4bkCsEmWR-3cy2QqBnNHxl-sd1M4bxkjBAD5pciA" />
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
   <title>MARKMELLON</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -113,15 +111,15 @@
 
   <main class="wrap">
     <section id="home" class="hero">
-     <div class="intro">
-  <div id="homeContent">
-    <h2>MARKMELLON</h2>
-    <p>Welcome to MarkMellon's personal website.</p>
-  </div>
-  <div class="cta">
-    <a href="#photos" class="btn btn-primary">See my photos</a>
-  </div>
-</div>
+      <div class="intro">
+        <div id="homeContent">
+          <h2>MARKMELLON</h2>
+          <p>Welcome to MarkMellon's personal website.</p>
+        </div>
+        <div class="cta">
+          <a href="#photos" class="btn btn-primary">See my photos</a>
+        </div>
+      </div>
       <aside class="hero-card">
         <h3>Quick Info</h3>
         <p style="color:var(--muted)">Based in: Uganda, Kampala<br/>Email: markmellon39@gmail.com</p>
@@ -130,11 +128,9 @@
 
     <section id="photos">
       <h3>Photos</h3>
+      <!-- The gallery container is now empty. JS will populate it from Firebase. -->
       <div class="gallery" id="gallery">
-        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122620040136.png" alt="photo-1"><div class="meta">Street</div></div>
-        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122620470457.jpg?updatedAt=1767087683329" alt="photo-2"><div class="meta">Portrait</div></div>
-        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mark/retouch_2025122621534832.jpg?updatedAt=1767087685540" alt="photo-3"><div class="meta">Nature</div></div>
-        <div class="photo"><img src="https://ik.imagekit.io/s95tumxuk/Mm.png?updatedAt=1765835532798" alt="photo-4"><div class="meta">Travel</div></div>
+        <p style="color:var(--muted); grid-column: 1/-1; text-align:center;">Loading photos...</p>
       </div>
     </section>
 
@@ -150,28 +146,38 @@
     <img id="lightbox-img" src="" alt="">
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    
     const links = document.querySelectorAll('.nav-link');
     links.forEach(l => l.addEventListener('click', e => {
       links.forEach(x => x.classList.remove('active'));
       e.currentTarget.classList.add('active');
     }));
-    const gallery = document.getElementById('gallery');
+
+    const galleryContainer = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
     const lbImg = document.getElementById('lightbox-img');
-    gallery.addEventListener('click', e => {
+
+    // Event delegation for lightbox (works with dynamically added images)
+    galleryContainer.addEventListener('click', e => {
       const card = e.target.closest('.photo');
       if(!card) return;
       const img = card.querySelector('img').src;
       lbImg.src = img;
       lightbox.style.display = 'flex';
     });
+
     function closeLightbox(e){
       if(e.target !== lightbox) return;
       lightbox.style.display = 'none';
       lbImg.src = '';
     }
+
     document.querySelectorAll('a[href^="#"]').forEach(a=>{
       a.addEventListener('click', function(e){
         const target = document.querySelector(this.getAttribute('href'));
@@ -179,11 +185,63 @@
           e.preventDefault();
           target.scrollIntoView({behavior:'smooth',block:'start'});
         }
-      })
+      });
     });
+
+    // ==========================================
+    // FIREBASE CONFIGURATION & GALLERY LOADING
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNMhxf7RPb4UqOOVQXjZtqVSxJW6jY_z4",
+      authDomain: "markmellon.firebaseapp.com",
+      databaseURL: "https://markmellon-default-rtdb.firebaseio.com",
+      projectId: "markmellon",
+      storageBucket: "markmellon.firebasestorage.app",
+      messagingSenderId: "693703950522",
+      appId: "1:693703950522:web:d6e1b0bd38d3d366998283",
+      measurementId: "G-D8K0QB3TZ4"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function loadGalleryImages() {
+      db.ref('gallery').orderByKey().on('value', (snapshot) => {
+        galleryContainer.innerHTML = ''; // Clear loading text
+        
+        if (!snapshot.exists()) {
+          galleryContainer.innerHTML = '<p style="color:var(--muted); grid-column: 1/-1; text-align:center;">No photos uploaded yet.</p>';
+          return;
+        }
+
+        const items = [];
+        snapshot.forEach(child => {
+          // unshift to show newest images first
+          items.unshift({ id: child.key, ...child.val() });
+        });
+
+        items.forEach(img => {
+          const photoDiv = document.createElement('div');
+          photoDiv.className = 'photo';
+          
+          // Using crossorigin="anonymous" ensures the watermark script can read the image canvas
+          photoDiv.innerHTML = `
+            <img src="${img.imageURL}" alt="${img.imageName || 'Photo'}" crossorigin="anonymous">
+            <div class="meta">${img.category || 'Photo'}</div>
+          `;
+          galleryContainer.appendChild(photoDiv);
+        });
+      }, (error) => {
+        console.error("Firebase read failed:", error);
+        galleryContainer.innerHTML = '<p style="color:red; grid-column: 1/-1; text-align:center;">Failed to load images. Check database rules.</p>';
+      });
+    }
+
+    // Call function to load images
+    loadGalleryImages();
   </script>
   
-<!-- Background Image or Video Script -->
+  <!-- Background Image or Video Script -->
   <script>
     // ==== CONFIGURATION ====
     const useVideoBackground = false; // set to true if you want to use video
@@ -220,85 +278,90 @@
     document.body.prepend(bgContainer);
     window.addEventListener('load', ()=>{ bgContainer.style.opacity = '1'; });
   </script>
+  
   <!-- ========== WATERMARK SCRIPT ========== -->
-<script>
-(function() {
-  const watermarkText = "© MARKMELLON"; // ← customize this
-  const textColor = "rgba(255,255,255,0.6)";
-  const font = "20px Inter, Arial, sans-serif";
-  const padding = 12;
+  <script>
+    (function() {
+      const watermarkText = "© MARKMELLON"; // ← customize this
+      const textColor = "rgba(255,255,255,0.6)";
+      const font = "20px Inter, Arial, sans-serif";
+      const padding = 12;
 
-  // add watermark to all <img> tags
-  function addImageWatermarks() {
-    document.querySelectorAll("img").forEach(img => {
-      // skip icons or already processed
-      if (img.dataset.watermarked || img.width === 0 || img.height === 0) return;
+      // add watermark to all <img> tags
+      function addImageWatermarks() {
+        document.querySelectorAll("img").forEach(img => {
+          // skip icons, tiny placeholders, or already processed images
+          if (img.dataset.watermarked || img.naturalWidth === 0) return;
 
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      ctx.drawImage(img, 0, 0);
-      ctx.font = font;
-      ctx.fillStyle = textColor;
-      ctx.textAlign = "right";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
+          // Skip the logo or icons that don't need watermark
+          if (img.closest('.logo')) return; 
 
-      img.src = canvas.toDataURL("image/jpeg", 0.9);
-      img.dataset.watermarked = "true";
-    });
-  }
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          
+          try {
+            ctx.drawImage(img, 0, 0);
+            ctx.font = font;
+            ctx.fillStyle = textColor;
+            ctx.textAlign = "right";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
 
-  // overlay watermark visually on videos
-  function addVideoWatermarks() {
-    document.querySelectorAll("video").forEach(video => {
-      if (video.dataset.watermarked) return;
+            img.src = canvas.toDataURL("image/jpeg", 0.9);
+            img.dataset.watermarked = "true";
+          } catch (e) {
+            console.error("Watermark CORS Error for image:", img.src, e);
+          }
+        });
+      }
 
-      const overlay = document.createElement("div");
-      overlay.textContent = watermarkText;
-      overlay.style.position = "absolute";
-      overlay.style.bottom = "8px";
-      overlay.style.right = "12px";
-      overlay.style.font = font;
-      overlay.style.color = textColor;
-      overlay.style.textShadow = "0 0 4px rgba(0,0,0,0.8)";
-      overlay.style.pointerEvents = "none";
-      overlay.style.userSelect = "none";
-      overlay.style.zIndex = "3";
+      // overlay watermark visually on videos
+      function addVideoWatermarks() {
+        document.querySelectorAll("video").forEach(video => {
+          if (video.dataset.watermarked) return;
 
-      // wrap the video in a positioned container
-      const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
-      wrapper.style.display = "inline-block";
-      wrapper.style.width = video.width ? video.width + "px" : "auto";
-      wrapper.style.height = video.height ? video.height + "px" : "auto";
+          const overlay = document.createElement("div");
+          overlay.textContent = watermarkText;
+          overlay.style.position = "absolute";
+          overlay.style.bottom = "8px";
+          overlay.style.right = "12px";
+          overlay.style.font = font;
+          overlay.style.color = textColor;
+          overlay.style.textShadow = "0 0 4px rgba(0,0,0,0.8)";
+          overlay.style.pointerEvents = "none";
+          overlay.style.userSelect = "none";
+          overlay.style.zIndex = "3";
 
-      video.parentNode.insertBefore(wrapper, video);
-      wrapper.appendChild(video);
-      wrapper.appendChild(overlay);
+          // wrap the video in a positioned container
+          const wrapper = document.createElement("div");
+          wrapper.style.position = "relative";
+          wrapper.style.display = "inline-block";
+          wrapper.style.width = video.width ? video.width + "px" : "auto";
+          wrapper.style.height = video.height ? video.height + "px" : "auto";
 
-      video.dataset.watermarked = "true";
-    });
-  }
+          video.parentNode.insertBefore(wrapper, video);
+          wrapper.appendChild(video);
+          wrapper.appendChild(overlay);
 
-  // Run when page finishes loading
-  window.addEventListener("load", () => {
-    addImageWatermarks();
-    addVideoWatermarks();
-  });
+          video.dataset.watermarked = "true";
+        });
+      }
 
-  // Also run on dynamically added media (e.g., via admin panel)
-  const observer = new MutationObserver(() => {
-    addImageWatermarks();
-    addVideoWatermarks();
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-})();
-</script>  
-<script src="assets/js/data-loader.js"></script>
-</body>
-</html>
-  </script>
+      // Run when page finishes loading
+      window.addEventListener("load", () => {
+        addImageWatermarks();
+        addVideoWatermarks();
+      });
+
+      // Also run on dynamically added media (e.g., via Firebase admin panel)
+      const observer = new MutationObserver(() => {
+        addImageWatermarks();
+        addVideoWatermarks();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>  
 </body>
 </html>
